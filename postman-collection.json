@@ -1,0 +1,285 @@
+{
+    "info": {
+        "_postman_id": "Bible Downloads api-v1",
+        "name": "Bible Downloads API v1 - Production",
+        "description": "Complete API collection for Bible Downloads . All routes use /api/v1 prefix.",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "item": [
+        {
+            "name": "📚 Bible Management (Admin Only)",
+            "item": [
+                {
+                    "name": "List All Bibles",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{auth_token}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/api/v1/bibles",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "v1",
+                                "bibles"
+                            ]
+                        },
+                        "description": "List all Bible versions (Admin only)"
+                    }
+                },
+                {
+                    "name": "Filter Bibles by Language",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{auth_token}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/api/v1/bibles?language=English",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "v1",
+                                "bibles"
+                            ],
+                            "query": [
+                                {
+                                    "key": "language",
+                                    "value": "English"
+                                }
+                            ]
+                        },
+                        "description": "Filter Bible versions by language (Admin only)"
+                    }
+                },
+                {
+                    "name": "Get Available Languages",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{auth_token}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/api/v1/bibles/languages",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "v1",
+                                "bibles",
+                                "languages"
+                            ]
+                        },
+                        "description": "Get list of available Bible languages (Admin only)"
+                    }
+                },
+                {
+                    "name": "Get Single Bible",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{auth_token}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/api/v1/bibles/1",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "v1",
+                                "bibles",
+                                "1"
+                            ]
+                        },
+                        "description": "Get single Bible version metadata (Admin only)"
+                    }
+                },
+                {
+                    "name": "Check Bible Updates",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{auth_token}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/api/v1/bibles/check-updates?last_sync=2025-01-01T00:00:00Z",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "v1",
+                                "bibles",
+                                "check-updates"
+                            ],
+                            "query": [
+                                {
+                                    "key": "last_sync",
+                                    "value": "2025-01-01T00:00:00Z"
+                                }
+                            ]
+                        },
+                        "description": "Check for Bible version updates since last sync (Admin only)"
+                    }
+                },
+                {
+                    "name": "Get Bible File Info",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{auth_token}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/api/v1/bibles/1/file-info",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "v1",
+                                "bibles",
+                                "1",
+                                "file-info"
+                            ]
+                        },
+                        "description": "Get Bible file information for download preparation (Admin only)"
+                    }
+                },
+                {
+                    "name": "Download Bible",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{auth_token}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/api/v1/bibles/1/download",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "v1",
+                                "bibles",
+                                "1",
+                                "download"
+                            ]
+                        },
+                        "description": "Download Bible file with resumable download support (Admin only)"
+                    }
+                }
+            ],
+            "description": "Bible version management (Requires admin role + Bearer token)"
+        }
+    ],
+    "variable": [
+        {
+            "key": "base_url",
+            "value": "",
+            "type": "string"
+        },
+        {
+            "key": "auth_token",
+            "value": "",
+            "type": "string"
+        }
+    ]
+}

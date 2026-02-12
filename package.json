@@ -1,0 +1,13 @@
+{
+  "name": "bible-api-tailwind",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "npx tailwindcss -i ./public/css/input.css -o ./public/css/output.css --watch",
+    "build": "npx tailwindcss -i ./public/css/input.css -o ./public/css/output.css --minify"
+  },
+  "devDependencies": {
+    "@tailwindcss/cli": "^4.1.18",
+    "tailwindcss": "^4.1.18"
+  }
+}
