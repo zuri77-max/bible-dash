@@ -133,6 +133,7 @@
                                     </button>
                                 </td>
                                 <td class="px-6 py-4 text-sm font-medium space-x-2">
+                                    <button onclick="openEditModal(<?= $bible['id'] ?>, '<?= esc($bible['name']) ?>', '<?= esc($bible['abbreviation']) ?>', '<?= esc($bible['language']) ?>', '<?= esc($bible['description'] ?? '') ?>')" class="text-blue-600 hover:text-blue-900">Edit</button>
                                     <a href="<?= base_url('api/v1/bibles/' . $bible['id'] . '/download') ?>" class="text-blue-600 hover:text-blue-900">Download</a>
                                     <button onclick="confirmDelete(<?= $bible['id'] ?>, '<?= esc($bible['name']) ?>')" class="text-red-600 hover:text-red-900">Delete</button>
                                 </td>
@@ -170,6 +171,146 @@
             window.location.href = `<?= base_url('admin/bibles/delete/') ?>${id}`;
         }
     }
+
+    function openEditModal(id, name, abbreviation, language, description) {
+        document.getElementById('editId').value = id;
+        document.getElementById('editName').value = name;
+        document.getElementById('editAbbreviation').value = abbreviation;
+        document.getElementById('editLanguage').value = language;
+        document.getElementById('editDescription').value = description;
+        
+        document.getElementById('editModal').classList.remove('hidden');
+        document.getElementById('editModal').classList.add('flex');
+    }
+
+    function closeEditModal() {
+        document.getElementById('editModal').classList.add('hidden');
+        document.getElementById('editModal').classList.remove('flex');
+    }
+
+    function handleEditSubmit(e) {
+        e.preventDefault();
+        
+        const id = document.getElementById('editId').value;
+        const formData = new FormData(e.target);
+        
+        fetch(`<?= base_url('admin/bibles/update/') ?>${id}`, {
+            method: 'POST',
+            body: formData,
+            headers: { 'X-Requested-With': 'XMLHttpRequest' }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showNotification('Bible updated successfully!', 'success');
+                closeEditModal();
+                setTimeout(() => location.reload(), 1500);
+            } else {
+                showNotification(data.message || 'Error updating Bible', 'error');
+            }
+        })
+        .catch(error => {
+            showNotification('Error: ' + error.message, 'error');
+        });
+    }
+
+    function showNotification(message, type = 'success') {
+        const notification = document.createElement('div');
+        notification.className = `fixed top-4 right-4 px-6 py-3 rounded-lg text-white ${
+            type === 'success' ? 'bg-green-600' : 'bg-red-600'
+        } shadow-lg transition-all duration-300`;
+        notification.textContent = message;
+        document.body.appendChild(notification);
+        
+        setTimeout(() => {
+            notification.style.opacity = '0';
+            setTimeout(() => notification.remove(), 300);
+        }, 3000);
+    }
+
+    // Close modal when clicking outside
+    document.getElementById('editModal')?.addEventListener('click', (e) => {
+        if (e.target.id === 'editModal') {
+            closeEditModal();
+        }
+    });
 </script>
+
+<!-- Edit Modal -->
+<div id="editModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
+    <div class="bg-white rounded-lg shadow-xl max-w-md w-full mx-4">
+        <div class="px-6 py-4 border-b border-slate-200 flex items-center justify-between">
+            <h3 class="text-lg font-semibold text-slate-900">Edit Bible</h3>
+            <button onclick="closeEditModal()" class="text-slate-500 hover:text-slate-700">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+            </button>
+        </div>
+        
+        <form onsubmit="handleEditSubmit(event)" class="p-6 space-y-4">
+            <input type="hidden" id="editId" name="id">
+            
+            <div>
+                <label for="editName" class="block text-sm font-medium text-slate-700 mb-1">Bible Name</label>
+                <input 
+                    type="text" 
+                    id="editName" 
+                    name="name" 
+                    required 
+                    class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+            </div>
+            
+            <div>
+                <label for="editAbbreviation" class="block text-sm font-medium text-slate-700 mb-1">Abbreviation</label>
+                <input 
+                    type="text" 
+                    id="editAbbreviation" 
+                    name="abbreviation" 
+                    required 
+                    class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+            </div>
+            
+            <div>
+                <label for="editLanguage" class="block text-sm font-medium text-slate-700 mb-1">Language</label>
+                <input 
+                    type="text" 
+                    id="editLanguage" 
+                    name="language" 
+                    required 
+                    class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+            </div>
+            
+            <div>
+                <label for="editDescription" class="block text-sm font-medium text-slate-700 mb-1">Description</label>
+                <textarea 
+                    id="editDescription" 
+                    name="description" 
+                    rows="3"
+                    class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                ></textarea>
+            </div>
+            
+            <div class="flex gap-3 pt-4">
+                <button 
+                    type="button" 
+                    onclick="closeEditModal()" 
+                    class="flex-1 px-4 py-2 text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-lg font-medium transition-colors"
+                >
+                    Cancel
+                </button>
+                <button 
+                    type="submit" 
+                    class="flex-1 px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 rounded-lg font-medium transition-colors"
+                >
+                    Update
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
 
 <?= $this->endSection() ?>

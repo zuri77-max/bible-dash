@@ -55,6 +55,14 @@ class BibleUpload extends BaseController
             return redirect()->back()->with('error', 'Failed to upload file');
         }
 
+        // Compute file hash
+        $filePath = WRITEPATH . 'uploads/bibles/' . $newName;
+        $fileHash = hash_file('sha256', $filePath);
+        
+        // Get file type
+        $pathInfo = pathinfo($newName);
+        $fileType = $pathInfo['extension'] ?? 'json';
+
         // Save to database
         $bibleModel = new BibleModel();
         $data = [
@@ -63,6 +71,8 @@ class BibleUpload extends BaseController
             'abbreviation' => strtoupper($this->request->getPost('abbreviation')),
             'file_path' => 'uploads/bibles/' . $newName,
             'file_size' => $file->getSize(),
+            'file_hash' => $fileHash,
+            'file_type' => $fileType,
             'version' => '1.0',
             'is_active' => 1
         ];

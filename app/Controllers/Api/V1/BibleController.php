@@ -26,10 +26,11 @@ class BibleController extends ResourceController
             $bibles = $this->model->getActiveBibles();
         }
 
+        $formattedBibles = $this->model->formatListForApi($bibles);
+
         return $this->respond([
-            'status' => 'success',
-            'data' => $bibles,
-            'count' => count($bibles),
+            'success' => true,
+            'data' => $formattedBibles,
         ]);
     }
 
@@ -47,9 +48,8 @@ class BibleController extends ResourceController
         }, $languages);
 
         return $this->respond([
-            'status' => 'success',
+            'success' => true,
             'data' => $languageList,
-            'count' => count($languageList),
         ]);
     }
 
@@ -65,9 +65,11 @@ class BibleController extends ResourceController
             return $this->failNotFound('Bible version not found');
         }
 
+        $formattedBible = $this->model->formatForApi($bible);
+
         return $this->respond([
-            'status' => 'success',
-            'data' => $bible,
+            'success' => true,
+            'data' => $formattedBible,
         ]);
     }
 
@@ -85,12 +87,12 @@ class BibleController extends ResourceController
 
         try {
             $updatedBibles = $this->model->getUpdatedAfter($lastSync);
+            $formattedBibles = $this->model->formatForCheckUpdates($updatedBibles);
 
             return $this->respond([
-                'status' => 'success',
-                'data' => $updatedBibles,
-                'count' => count($updatedBibles),
-                'has_updates' => count($updatedBibles) > 0,
+                'success' => true,
+                'data' => $formattedBibles,
+                'has_updates' => count($formattedBibles) > 0,
             ]);
         } catch (\Exception $e) {
             return $this->failValidationErrors('Invalid date format for last_sync');
@@ -113,17 +115,23 @@ class BibleController extends ResourceController
             return $this->fail('Bible file not found on server', 404);
         }
 
+        // Determine file type
+        if (empty($bible['file_type'])) {
+            $pathInfo = pathinfo($bible['file_path']);
+            $bible['file_type'] = $pathInfo['extension'] ?? 'json';
+        }
+
         return $this->respond([
-            'status' => 'success',
+            'success' => true,
             'data' => [
-                'id' => $bible['id'],
-                'name' => $bible['name'],
+                'id' => (int) $bible['id'],
                 'abbreviation' => $bible['abbreviation'],
-                'language' => $bible['language'],
-                'version' => $bible['version'],
-                'file_size' => $bible['actual_file_size'],
-                'file_mime_type' => $bible['file_mime_type'],
-                'download_url' => base_url("api/v1/bibles/{$id}/download"),
+                'file_name' => $bible['file_name'],
+                'file_size' => (int) $bible['actual_file_size'],
+                'file_hash' => $bible['file_hash'] ?? '',
+                'file_type' => $bible['file_type'],
+                'mime_type' => $bible['file_mime_type'],
+                'supports_resume' => true,
             ],
         ]);
     }
@@ -140,16 +148,24 @@ class BibleController extends ResourceController
             return $this->failNotFound('Bible version not found');
         }
 
-        $filePath = FCPATH . $bible['file_path'];
+        $filePath = WRITEPATH . $bible['file_path'];
 
         if (!file_exists($filePath)) {
             return $this->fail('Bible file not found on server', 404);
         }
 
+        // Determine mime type based on file type
+        $mimeType = 'application/json';
+        if (!empty($bible['file_type'])) {
+            if ($bible['file_type'] === 'db') {
+                $mimeType = 'application/octet-stream';
+            }
+        }
+
         // Set headers for download
         return $this->response
-            ->setHeader('Content-Type', 'application/octet-stream')
-            ->setHeader('Content-Disposition', 'attachment; filename="' . basename($filePath) . '"')
+            ->setHeader('Content-Type', $mimeType)
+            ->setHeader('Content-Disposition', 'inline; filename="' . basename($filePath) . '"')
             ->setHeader('Content-Length', filesize($filePath))
             ->setHeader('Accept-Ranges', 'bytes')
             ->setHeader('Cache-Control', 'must-revalidate')

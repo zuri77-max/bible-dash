@@ -20,6 +20,7 @@ $routes->group('admin', ['filter' => 'group:admin'], function($routes) {
     $routes->get('bibles', 'Admin\\BibleManageController::index');
     $routes->get('bibles/delete/(:num)', 'Admin\\BibleManageController::delete/$1');
     $routes->post('bibles/toggle-status/(:num)', 'Admin\\BibleManageController::toggleStatus/$1');
+    $routes->post('bibles/update/(:num)', 'Admin\\BibleManageController::update/$1');
     $routes->get('bibleupload', 'Admin\\BibleUpload::index');
     $routes->post('bibleupload/upload', 'Admin\\BibleUpload::upload');
     $routes->get('generate-token', 'Admin\\TokenController::index');

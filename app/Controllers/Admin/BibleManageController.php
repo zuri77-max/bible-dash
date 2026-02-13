@@ -56,4 +56,50 @@ class BibleManageController extends BaseController
 
         return $this->response->setJSON(['success' => false, 'message' => 'Failed to update status']);
     }
-}
+
+    public function update($id)
+    {
+        $bible = $this->bibleModel->find($id);
+        
+        if (!$bible) {
+            if ($this->request->isAJAX()) {
+                return $this->response->setJSON(['success' => false, 'message' => 'Bible not found']);
+            }
+            return redirect()->back()->with('error', 'Bible not found');
+        }
+
+        $validation = \Config\Services::validation();
+        
+        $rules = [
+            'name' => 'required|min_length[3]|max_length[255]',
+            'abbreviation' => 'required|min_length[2]|max_length[10]',
+            'language' => 'required|min_length[2]|max_length[100]',
+            'description' => 'max_length[1000]',
+        ];
+
+        if (!$this->validate($rules)) {
+            if ($this->request->isAJAX()) {
+                return $this->response->setJSON(['success' => false, 'message' => 'Validation failed', 'errors' => $validation->getErrors()]);
+            }
+            return redirect()->back()->withInput()->with('error', 'Validation failed');
+        }
+
+        $data = [
+            'name' => $this->request->getPost('name'),
+            'abbreviation' => strtoupper($this->request->getPost('abbreviation')),
+            'language' => $this->request->getPost('language'),
+            'description' => $this->request->getPost('description'),
+        ];
+
+        if ($this->bibleModel->update($id, $data)) {
+            if ($this->request->isAJAX()) {
+                return $this->response->setJSON(['success' => true, 'message' => 'Bible updated successfully']);
+            }
+            return redirect()->to('admin/bibles')->with('success', 'Bible updated successfully');
+        }
+
+        if ($this->request->isAJAX()) {
+            return $this->response->setJSON(['success' => false, 'message' => 'Failed to update Bible']);
+        }
+        return redirect()->back()->with('error', 'Failed to update Bible');
+    }}
